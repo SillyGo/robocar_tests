@@ -9,6 +9,7 @@ import cv2
 import numpy as np 
 
 from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
 
 import time
 
@@ -37,7 +38,7 @@ def change_vel(new_fv:float, new_av:float):
 
 def openCV_main(frame:np.ndarray):
     time_start = time.time()
-    k = 3
+    k = 5
 
     h,w = frame.shape[0], frame.shape[1]
 
@@ -48,7 +49,9 @@ def openCV_main(frame:np.ndarray):
             frame[j][i][2] = 0
     
     X = frame.reshape(-1,3) 
-    km = KMeans(n_clusters=k, n_init=10)
+    #km = KMeans(n_clusters=k, n_init=10)
+    km = MiniBatchKMeans(n_clusters=k, n_init=1,batch_size=100,max_iter=50)
+
     km.fit(X)
     segmented_image = km.cluster_centers_[km.labels_]
     segmented_image = segmented_image.reshape(frame.shape)
