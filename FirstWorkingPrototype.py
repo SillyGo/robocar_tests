@@ -57,7 +57,7 @@ def openCV_main(frame:np.ndarray):
     histogram_count = 15
     d0 = np.pi / histogram_count #diferença de ângulo entre dois histogramas
 
-    bitmap = [1 for i in range(histogram_count)] #1 = perfeitamente limpo, 0 = obstáculo iminente
+    bitmap = [10000 for i in range(histogram_count)] #1 = perfeitamente limpo, 0 = obstáculo iminente
 
     factor = 3
 
@@ -80,13 +80,21 @@ def openCV_main(frame:np.ndarray):
             theta = np.arcsin(x_factor/d)
             index = int(theta / d0)
             
-            points = max(0, d - 50) / (max_d - 50)
+            points = max(0, d - 50) / ((2*h/3)- 50)
             
-            if points <= bitmap[index]:
-                bitmap[index] = points
+            if d <= bitmap[index]:
+                bitmap[index] = d
 
     sum = 0
     div_by = 0
+
+    max_el = max(bitmap)
+    #print(bitmap)
+    for i in range(len(bitmap)):
+        bitmap[i] = bitmap[i] / max_el
+    
+    #print(bitmap)
+
     for i in range(len(bitmap)):
 
         if bitmap[i] < 1:
@@ -98,11 +106,13 @@ def openCV_main(frame:np.ndarray):
     if div_by == 0:
         change_vel(0.0,0.0)
     else:
-        print(int(sum/div_by) - int(len(bitmap)/2))
+        #print(int(sum/div_by) - int(len(bitmap)/2))
         angle = (sum / div_by) - (len(bitmap)/2)
 
-        print(angle)
-        lin_vel = 1.5 / (abs(angle)+0.1)
+        #print(angle)
+        lin_vel = 2.9 / (abs(angle)+0.1)
+
+        print(lin_vel)
 
         change_vel(1.5, -angle)
     
